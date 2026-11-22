@@ -46,7 +46,8 @@ export class ItemFactory {
         .loadAsync(`${this.base}models/${this.manifest[key].file}`)
         .then((g) => g.scene)
         .catch((e) => {
-          console.warn(`model ${key} failed, using procedural`, e);
+          console.warn(`model ${key} failed, using procedural for now`, e);
+          this.cache.delete(key); // retry next time instead of sticking to the fallback
           return null;
         });
       this.cache.set(key, p);
@@ -60,7 +61,8 @@ export class ItemFactory {
     if (!t) {
       const src = this.hasModel(def) ? await this.load(def.model!) : null;
       t = src ? prepareTemplate(src, true) : prepareTemplate(buildProcedural(def.shape, def.look), false);
-      this.templates.set(def.id, t);
+      // cache only the intended look: a fallback after a failed download must not stick
+      if (src || !this.hasModel(def)) this.templates.set(def.id, t);
     }
     return instantiate(t);
   }

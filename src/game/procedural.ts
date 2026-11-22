@@ -142,9 +142,13 @@ export function buildProcedural(shape: ItemShape, look: Look): THREE.Group {
       break;
     }
     case 'wrench': {
-      g.add(mesh(boxGeo(0.22, 1.5, 0.1), mat, [0, -0.25, 0]));
-      g.add(mesh(new THREE.TorusGeometry(0.28, 0.1, 12, 32, Math.PI * 1.4), mat, [0, 0.72, 0], [0, 0, -Math.PI * 0.2]));
-      g.add(mesh(lathe([V(0, -0.1), V(0.09, -0.1), V(0.09, 0.1), V(0, 0.1)], 20), mat, [0.12, 0.25, 0], [0, 0, Math.PI / 2]));
+      // adjustable wrench: handle, head with fixed + sliding jaw, worm screw
+      g.add(mesh(lathe([V(0, -0.9), V(0.1, -0.88), V(0.13, -0.6), V(0.11, 0.2), V(0.09, 0.4), V(0, 0.42)], 24), mat, [0, -0.25, 0]));
+      g.add(mesh(boxGeo(0.34, 0.5, 0.16), mat, [0, 0.38, 0]));
+      g.add(mesh(boxGeo(0.62, 0.16, 0.16), mat, [0.14, 0.7, 0]));
+      g.add(mesh(boxGeo(0.16, 0.3, 0.16), mat, [0.37, 0.55, 0]));
+      g.add(mesh(boxGeo(0.5, 0.14, 0.15), mat, [0.1, 0.3, 0]));
+      g.add(mesh(lathe([V(0, -0.12), V(0.07, -0.12), V(0.075, 0), V(0.07, 0.12), V(0, 0.12)], 20), mat, [-0.02, 0.18, 0.09], [Math.PI / 2, 0, 0]));
       break;
     }
     case 'kettle': {
