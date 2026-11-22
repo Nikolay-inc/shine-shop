@@ -1,0 +1,41 @@
+{
+  "source": "https://polyhaven.com (CC0)",
+  "models": {
+    "wrench": {
+      "file": "wrench.glb",
+      "polyhaven": "adjustable_wrench",
+      "url": "https://polyhaven.com/a/adjustable_wrench",
+      "bytes": 446736
+    },
+    "jug": {
+      "file": "jug.glb",
+      "polyhaven": "jug_01",
+      "url": "https://polyhaven.com/a/jug_01",
+      "bytes": 112096
+    },
+    "kettle": {
+      "file": "kettle.glb",
+      "polyhaven": "brass_pot_02",
+      "url": "https://polyhaven.com/a/brass_pot_02",
+      "bytes": 127188
+    },
+    "lantern": {
+      "file": "lantern.glb",
+      "polyhaven": "Lantern_01",
+      "url": "https://polyhaven.com/a/Lantern_01",
+      "bytes": 422196
+    },
+    "watch": {
+      "file": "watch.glb",
+      "polyhaven": "pocket_watch",
+      "url": "https://polyhaven.com/a/pocket_watch",
+      "bytes": 259092
+    },
+    "camera": {
+      "file": "camera.glb",
+      "polyhaven": "Camera_01",
+      "url": "https://polyhaven.com/a/Camera_01",
+      "bytes": 864556
+    }
+  }
+}
