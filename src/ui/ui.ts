@@ -192,8 +192,8 @@ export class Ui {
     }
   }
 
-  setItem(name: string, rarity: RarityId, golden: boolean) {
-    $('#item-name', this.root).textContent = name;
+  setItem(name: string, rarity: RarityId, golden: boolean, sizeCm?: number) {
+    $('#item-name', this.root).innerHTML = `${name}${sizeCm ? ` <small class="size">≈ ${sizeCm} см</small>` : ''}`;
     const b = $('#item-badge', this.root);
     const r = rarityById(rarity);
     b.textContent = golden ? '✦ Золотая находка' : r.name;

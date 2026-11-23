@@ -7,14 +7,14 @@ import {
 
 describe('prices', () => {
   it('depend on item and rarity', () => {
-    const coin = itemById('coin');
+    const coin = itemById('watch');
     expect(itemPrice(coin, 'common', false)).toBe(coin.price);
     expect(itemPrice(coin, 'rare', false)).toBe(Math.round(coin.price * 1.5));
     expect(itemPrice(coin, 'epic', false)).toBe(Math.round(coin.price * 2.5));
-    expect(itemPrice(itemById('camera'), 'common', false)).toBeGreaterThan(itemPrice(coin, 'epic', false));
+    expect(itemPrice(itemById('chest'), 'common', false)).toBeGreaterThan(itemPrice(coin, 'epic', false));
   });
   it('golden find is x5', () => {
-    const vase = itemById('vase');
+    const vase = itemById('brassvase');
     expect(itemPrice(vase, 'common', true)).toBe(vase.price * GOLDEN_MUL);
     expect(itemPrice(vase, 'rare', true)).toBe(Math.round(vase.price * 1.5 * GOLDEN_MUL));
   });
@@ -49,7 +49,7 @@ describe('tools', () => {
     for (const t of TOOLS.filter((x) => x.tier >= 2)) expect(rustRate(t)).toBe(1);
   });
   it('rusty items are much slower with the sponge', () => {
-    const key = itemById('key');
+    const key = itemById('pliers');
     expect(cleanSeconds(key, toolById('sponge'))).toBeGreaterThan(3 * cleanSeconds(key, toolById('brush')));
     // and every better tool is faster
     const lantern = itemById('lantern');
@@ -95,15 +95,23 @@ describe('offline income', () => {
 });
 
 describe('item pool', () => {
-  it('starts with the coin only and unlocks over time', () => {
-    expect(unlockedItems(0).map((i) => i.id)).toEqual(['coin']);
-    expect(pickItem(0, 0.5).id).toBe('coin');
+  it('starts with several items and unlocks new ones over time', () => {
+    expect(unlockedItems(0).length).toBeGreaterThanOrEqual(4);
     expect(unlockedItems(1000)).toHaveLength(ITEMS.length);
-    expect(nextLockedItem(0)?.id).toBe('cup');
+    expect(nextLockedItem(0)?.id).toBe('teacup');
     expect(nextLockedItem(1000)).toBeNull();
+    expect(ITEMS.length).toBeGreaterThanOrEqual(20);
   });
-  it('never repeats the previous item when there is a choice', () => {
-    for (let r = 0; r < 1; r += 0.05) expect(pickItem(10, r, 'vase').id).not.toBe('vase');
+  it('never repeats the last 3 items', () => {
+    const recent = ['watch', 'compass', 'magnifier'];
+    for (let r = 0; r < 1; r += 0.02) expect(recent).not.toContain(pickItem(0, r, recent).id);
+  });
+  it('every item has a model, a real size and a unique id', () => {
+    expect(new Set(ITEMS.map((i) => i.id)).size).toBe(ITEMS.length);
+    for (const it of ITEMS) {
+      expect(it.model).toBeTruthy();
+      expect(it.sizeCm).toBeGreaterThan(0);
+    }
   });
   it('GOLDEN_EVERY is 20', () => expect(GOLDEN_EVERY).toBe(20));
 });

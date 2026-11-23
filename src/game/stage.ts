@@ -10,7 +10,11 @@ export interface Hit {
 }
 
 const PEDESTAL_TOP = 0;
-const ITEM_LIFT = 1.06; // item has a unit bounding sphere; centre sits this high over the pedestal
+const ITEM_LIFT = 1.06; // initial centre height of the unit-sphere item (it then rests on the pedestal)
+/** Real-world references (cm) that convey the item's true size. */
+const PEDESTAL_RADIUS_CM = 18;
+const PLANK_CM = 14;
+const corner = new THREE.Vector3();
 
 export class Stage {
   readonly renderer: THREE.WebGLRenderer;
@@ -30,6 +34,10 @@ export class Stage {
   private width = 1;
   private height = 1;
   bob = 0;
+  /** 0.62 (small item, more empty space around it) … 1 (large item fills the frame). */
+  private fill = 1;
+  private pedestal = new THREE.Group();
+  private tableMap: THREE.Texture | null = null;
   private turnTo: { yaw: number; pitch: number } | null = null;
 
   constructor(canvas: HTMLCanvasElement) {
@@ -80,9 +88,10 @@ export class Stage {
     this.scene.add(wall);
 
     // workbench top
+    this.tableMap = woodTexture();
     const table = new THREE.Mesh(
       new THREE.PlaneGeometry(30, 14),
-      new THREE.MeshStandardMaterial({ map: woodTexture(), roughness: 0.75, metalness: 0, color: 0xc9a27e }),
+      new THREE.MeshStandardMaterial({ map: this.tableMap, roughness: 0.75, metalness: 0, color: 0xc9a27e }),
     );
     table.rotation.x = -Math.PI / 2;
     table.position.set(0, PEDESTAL_TOP - 0.62, -1);
@@ -98,7 +107,8 @@ export class Stage {
     const felt = new THREE.Mesh(new THREE.CylinderGeometry(0.97, 0.97, 0.04, 64), new THREE.MeshStandardMaterial({ color: 0x6b2b24, roughness: 0.95 }));
     felt.position.y = PEDESTAL_TOP;
     felt.receiveShadow = true;
-    this.scene.add(base, felt);
+    this.pedestal.add(base, felt);
+    this.scene.add(this.pedestal);
 
     // a few blurry props on the bench for depth
     const jar = new THREE.Mesh(new THREE.CylinderGeometry(0.35, 0.35, 0.9, 24), new THREE.MeshStandardMaterial({ color: 0x8a6a40, roughness: 0.4, transparent: true, opacity: 0.55 }));
@@ -123,13 +133,15 @@ export class Stage {
     this.height = h;
     this.renderer.setSize(w, h, false);
     this.camera.aspect = w / h;
-    // fit the unit sphere: ~44% of the height and ~70% of the width (HUD lives above and below)
-    const t = Math.tan(THREE.MathUtils.degToRad(this.camera.fov / 2));
-    this.baseDist = Math.max(1 / (0.44 * t), 1 / (0.7 * t * this.camera.aspect));
     this.camera.updateProjectionMatrix();
+    this.fitCamera();
   }
 
-  setItem(item: PreparedItem | null) {
+  /**
+   * @param sizeCm  real largest dimension of the item
+   * @param radiusCm real bounding-sphere radius (= 1 world unit, since items are normalized to a unit sphere)
+   */
+  setItem(item: PreparedItem | null, sizeCm = 20, radiusCm = 12) {
     if (this.item) {
       this.pivot.remove(this.item.root);
       // geometry is cached per item type (ItemFactory); only materials are per instance
@@ -142,7 +154,48 @@ export class Stage {
       this.pitch = 0.15;
       this.velYaw = this.velPitch = 0;
       this.zoom = 1;
+      this.applyScale(sizeCm, radiusCm);
+      this.fitCamera();
+      this.pivot.position.y = PEDESTAL_TOP + this.restLift();
     }
+  }
+
+  /**
+   * Frame the item by its bounding box (not the sphere), so long thin things (hammer, lamp) are not tiny:
+   * height up to ~52% of the screen (HUD lives above and below), width up to ~80%.
+   */
+  private fitCamera() {
+    const t = Math.tan(THREE.MathUtils.degToRad(this.camera.fov / 2));
+    const size = this.item ? this.item.box.getSize(new THREE.Vector3()) : new THREE.Vector3(1.4, 1.4, 1.4);
+    const halfH = (size.y / 2) * 1.05;
+    const halfW = (Math.hypot(size.x, size.z) / 2) * 0.85;
+    const byBox = Math.max(halfH / (0.52 * t), halfW / (0.8 * t * this.camera.aspect));
+    // never so close that rotating swings the item far out of the frame
+    const bySphere = Math.max(1 / (0.75 * t), 1 / (1.05 * t * this.camera.aspect));
+    this.baseDist = Math.max(byBox, bySphere * 0.75);
+  }
+
+  /** Real scale: the pedestal and bench planks keep their real size relative to the item; small items get more room. */
+  private applyScale(sizeCm: number, radiusCm: number) {
+    const t = THREE.MathUtils.clamp(Math.log(sizeCm / 8) / Math.log(96 / 8), 0, 1);
+    this.fill = 0.72 + 0.28 * t;
+    const ped = THREE.MathUtils.clamp(PEDESTAL_RADIUS_CM / radiusCm, 1.0, 3.8);
+    this.pedestal.scale.set(ped, 1, ped);
+    const plank = THREE.MathUtils.clamp(PLANK_CM / radiusCm, 0.25, 4);
+    this.tableMap?.repeat.set(30 / (6 * plank), 14 / (6 * plank));
+  }
+
+  /** How high the item centre must be for its rotated bounding box to rest on the pedestal. */
+  private restLift(): number {
+    if (!this.item) return ITEM_LIFT;
+    const b = this.item.box;
+    const q = new THREE.Quaternion().setFromEuler(new THREE.Euler(this.pitch, this.yaw, 0, 'XYZ'));
+    let minY = Infinity;
+    for (let i = 0; i < 8; i++) {
+      corner.set(i & 1 ? b.max.x : b.min.x, i & 2 ? b.max.y : b.min.y, i & 4 ? b.max.z : b.min.z).applyQuaternion(q);
+      minY = Math.min(minY, corner.y);
+    }
+    return -minY + 0.03;
   }
 
   rotate(dx: number, dy: number) {
@@ -198,9 +251,11 @@ export class Stage {
       if (Math.abs(this.turnTo.yaw - this.yaw) + Math.abs(this.turnTo.pitch - this.pitch) < 0.01) this.turnTo = null;
     }
     this.pivot.rotation.set(this.pitch, this.yaw, 0, 'XYZ');
-    this.pivot.position.y = PEDESTAL_TOP + ITEM_LIFT + Math.sin(this.bob) * 0.015;
-    const d = this.baseDist * this.zoom;
-    const target = new THREE.Vector3(0, PEDESTAL_TOP + ITEM_LIFT - 0.12 * this.zoom, 0);
+    // rest on the pedestal; lift smoothly when a rotation needs more clearance
+    const lift = PEDESTAL_TOP + this.restLift();
+    this.pivot.position.y += (lift - this.pivot.position.y) * (dt > 0 ? 1 - Math.pow(0.001, dt) : 1);
+    const d = (this.baseDist * this.zoom) / this.fill;
+    const target = new THREE.Vector3(0, this.pivot.position.y - 0.12 * this.zoom, 0);
     this.camera.position.set(0, target.y + d * 0.2, d);
     this.camera.lookAt(target);
   }

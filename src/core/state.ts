@@ -44,7 +44,8 @@ export interface GameState {
   bag: { pos: number; golden: number };
   rng: number;
   current: CurrentItem | null;
-  lastItem?: string;
+  /** Recently shown items (newest last) — not repeated. */
+  recent: string[];
   muted: boolean;
   tutorialDone: boolean;
   stats: Stats;
@@ -64,6 +65,7 @@ export function createState(seed: number): GameState {
     bag: { pos: 0, golden: 0 },
     rng: seed >>> 0,
     current: null,
+    recent: [],
     muted: false,
     tutorialDone: false,
     stats: { coinsEarned: 0, coinsFromItems: 0, coinsFromHelpers: 0, coinsOffline: 0, playSeconds: 0, sessions: 0 },
@@ -90,12 +92,12 @@ export function drawGolden(s: GameState): boolean {
 }
 
 export function startNextItem(s: GameState): CurrentItem {
-  const item = pickItem(s.restored, nextRandom(s), s.lastItem);
+  const item = pickItem(s.restored, nextRandom(s), s.recent);
   const first = s.restored === 0;
   const rarity = first ? 'common' : rollRarity(nextRandom(s));
   const golden = drawGolden(s);
   s.current = { itemId: item.id, rarity, golden, n: s.restored + 1, done: false };
-  s.lastItem = item.id;
+  s.recent = [...s.recent, item.id].slice(-6);
   return s.current;
 }
 

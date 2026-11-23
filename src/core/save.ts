@@ -1,4 +1,5 @@
 // SaveService: versioned save in key-value storage, stable playerId (UUID), exit time for offline income.
+import { ITEMS } from './config';
 import { createState, type GameState } from './state';
 import type { GameEvent } from './events';
 import { randomSeed } from './rng';
@@ -37,13 +38,20 @@ export function uuid(): string {
 /** Fills fields added in later builds so old saves keep working. */
 function normalize(state: GameState): GameState {
   const fresh = createState(state.rng ?? randomSeed());
-  return {
+  const known = new Set(ITEMS.map((i) => i.id));
+  const out: GameState = {
     ...fresh,
     ...state,
     helpers: { ...fresh.helpers, ...state.helpers },
     helperProgress: { ...fresh.helperProgress, ...state.helperProgress },
     stats: { ...fresh.stats, ...state.stats },
+    // items removed from the catalog in later builds disappear from the album / queue
+    album: Object.fromEntries(Object.entries(state.album ?? {}).filter(([id]) => known.has(id))),
+    recent: (state.recent ?? []).filter((id) => known.has(id)),
   };
+  if (out.current && !known.has(out.current.itemId)) out.current = null;
+  delete (out as GameState & { lastItem?: string }).lastItem;
+  return out;
 }
 
 export class SaveService {

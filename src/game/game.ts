@@ -83,6 +83,7 @@ export class Game {
     const gl = this.root.querySelector<HTMLCanvasElement>('#gl')!;
     const fxc = this.root.querySelector<HTMLCanvasElement>('#fx')!;
     this.stage = new Stage(gl);
+    this.factory.setRenderer(this.stage.renderer);
     this.fx = new Fx(fxc);
     this.ui = new Ui(this.root, this.uiActions(), () => this.state);
     this.input = new Input(gl, {
@@ -145,7 +146,7 @@ export class Game {
     const def = itemById(c.itemId);
     this.phase = 'loading';
     this.ui.setLoading(true);
-    const item = await this.factory.build(def);
+    const { item, sizeCm, radiusCm } = await this.factory.build(def);
     const dirt = makeDirt(item.raster, def.rust, c.n * 7919 + def.price);
     this.dirtTex?.dispose();
     this.dirtTex = dirt.texture;
@@ -154,9 +155,9 @@ export class Game {
     item.uniforms.uGold.value = c.golden ? 1 : 0;
     item.uniforms.uSeed.value = (c.n % 17) * 1.37;
     this.cleaner.reset(item.raster, dirt.rust);
-    this.stage.setItem(item);
+    this.stage.setItem(item, sizeCm, radiusCm);
     this.item = item;
-    this.ui.setItem(def.name, c.rarity, c.golden);
+    this.ui.setItem(def.name, c.rarity, c.golden, sizeCm);
     this.ui.setProgress(0);
     this.ui.setLoading(false);
     this.beforeShot = this.stage.snapshot();

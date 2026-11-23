@@ -53,6 +53,14 @@ describe('SaveService', () => {
     expect(data.state.toolsOwned).toEqual(['sponge']);
     expect(data.events).toEqual([]);
   });
+  it('drops items that no longer exist in the catalog', () => {
+    const kv = new MemKV();
+    kv.setItem(SAVE_KEY, JSON.stringify({ version: 1, playerId: 'p', lastSeen: 1, state: { coins: 1, album: { coin: { count: 2, best: 'common', golden: 0 }, watch: { count: 1, best: 'rare', golden: 0 } }, current: { itemId: 'coin', rarity: 'common', golden: false, n: 3, done: false }, lastItem: 'coin' } }));
+    const { data } = new SaveService(kv).load();
+    expect(Object.keys(data.state.album)).toEqual(['watch']);
+    expect(data.state.current).toBeNull();
+    expect(data.state.recent).toEqual([]);
+  });
   it('works without storage', () => {
     const svc = new SaveService(null);
     const { data } = svc.load();

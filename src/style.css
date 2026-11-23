@@ -304,6 +304,11 @@ button {
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.7);
   margin-bottom: 5px;
 }
+.item-line .size {
+  font-size: 12px;
+  font-weight: 700;
+  opacity: 0.75;
+}
 .badge {
   display: inline-block;
   font-size: 11px;

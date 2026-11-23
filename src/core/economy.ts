@@ -1,6 +1,6 @@
 // Pure economy formulas. No Three.js, no DOM.
 import {
-  BASE_CLEAN_SECONDS, GOLDEN_MUL, HELPERS, ITEMS, OFFLINE_CAP_SECONDS, RARITIES, RUST_WEIGHT,
+  BASE_CLEAN_SECONDS, GOLDEN_MUL, HELPERS, ITEMS, NO_REPEAT, OFFLINE_CAP_SECONDS, RARITIES, RUST_WEIGHT,
   TOOLS, WEAK_RUST_MUL, type HelperDef, type ItemDef, type RarityId, type ToolDef,
 } from './config';
 
@@ -89,10 +89,11 @@ export function nextLockedItem(restored: number): ItemDef | null {
   return ITEMS.find((i) => i.unlockAt > restored) ?? null;
 }
 
-/** Weighted pick of the next item: newer items are more likely, never the same item twice in a row. */
-export function pickItem(restored: number, r: number, previous?: string): ItemDef {
-  let pool = unlockedItems(restored);
-  if (pool.length > 1 && previous) pool = pool.filter((i) => i.id !== previous);
+/** Weighted pick of the next item: newer items are more likely; the last NO_REPEAT items are skipped. */
+export function pickItem(restored: number, r: number, recent: string[] = []): ItemDef {
+  const all = unlockedItems(restored);
+  const avoid = recent.slice(-Math.min(NO_REPEAT, all.length - 1));
+  const pool = all.filter((i) => !avoid.includes(i.id));
   const weights = pool.map((_, i) => Math.pow(i + 1, 1.6));
   const sum = weights.reduce((a, b) => a + b, 0);
   let x = r * sum;

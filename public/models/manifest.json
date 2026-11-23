@@ -1,41 +1,269 @@
 {
   "source": "https://polyhaven.com (CC0)",
   "models": {
-    "wrench": {
-      "file": "wrench.glb",
-      "polyhaven": "adjustable_wrench",
-      "url": "https://polyhaven.com/a/adjustable_wrench",
-      "bytes": 446736
+    "watch": {
+      "file": "watch.glb",
+      "polyhaven": "pocket_watch",
+      "url": "https://polyhaven.com/a/pocket_watch",
+      "bytes": 259092,
+      "dimsCm": [
+        6,
+        2,
+        8
+      ]
+    },
+    "compass": {
+      "file": "compass.glb",
+      "polyhaven": "seadogs_compass",
+      "url": "https://polyhaven.com/a/seadogs_compass",
+      "bytes": 501272,
+      "dimsCm": [
+        8,
+        15,
+        9
+      ]
+    },
+    "magnifier": {
+      "file": "magnifier.glb",
+      "polyhaven": "magnifying_glass_01",
+      "url": "https://polyhaven.com/a/magnifying_glass_01",
+      "bytes": 129800,
+      "dimsCm": [
+        13,
+        3,
+        27
+      ]
+    },
+    "elephant": {
+      "file": "elephant.glb",
+      "polyhaven": "carved_wooden_elephant",
+      "url": "https://polyhaven.com/a/carved_wooden_elephant",
+      "bytes": 315940,
+      "dimsCm": [
+        11,
+        6,
+        10
+      ]
+    },
+    "teaset": {
+      "file": "teaset.glb",
+      "polyhaven": "tea_set_01",
+      "url": "https://polyhaven.com/a/tea_set_01",
+      "bytes": 250548,
+      "dimsCm": [
+        92,
+        48,
+        16
+      ]
+    },
+    "pliers": {
+      "file": "pliers.glb",
+      "polyhaven": "pliers",
+      "url": "https://polyhaven.com/a/pliers",
+      "bytes": 275212,
+      "dimsCm": [
+        6,
+        2,
+        18
+      ]
+    },
+    "brassvase": {
+      "file": "brassvase.glb",
+      "polyhaven": "brass_vase_04",
+      "url": "https://polyhaven.com/a/brass_vase_04",
+      "bytes": 162132,
+      "dimsCm": [
+        8,
+        6,
+        17
+      ]
+    },
+    "hammer": {
+      "file": "hammer.glb",
+      "polyhaven": "cross_pein_hammer",
+      "url": "https://polyhaven.com/a/cross_pein_hammer",
+      "bytes": 205052,
+      "dimsCm": [
+        10,
+        2,
+        30
+      ]
+    },
+    "goblets": {
+      "file": "goblets.glb",
+      "polyhaven": "brass_goblets",
+      "url": "https://polyhaven.com/a/brass_goblets",
+      "bytes": 646688,
+      "dimsCm": [
+        45,
+        30,
+        27
+      ]
     },
     "jug": {
       "file": "jug.glb",
       "polyhaven": "jug_01",
       "url": "https://polyhaven.com/a/jug_01",
-      "bytes": 112096
+      "bytes": 112096,
+      "dimsCm": [
+        28,
+        17,
+        21
+      ]
+    },
+    "oilcan": {
+      "file": "oilcan.glb",
+      "polyhaven": "small_oil_can_01",
+      "url": "https://polyhaven.com/a/small_oil_can_01",
+      "bytes": 355452,
+      "dimsCm": [
+        27,
+        10,
+        24
+      ]
+    },
+    "wrench": {
+      "file": "wrench.glb",
+      "polyhaven": "adjustable_wrench",
+      "url": "https://polyhaven.com/a/adjustable_wrench",
+      "bytes": 446736,
+      "dimsCm": [
+        7,
+        3,
+        25
+      ]
+    },
+    "binocular": {
+      "file": "binocular.glb",
+      "polyhaven": "vintage_binocular",
+      "url": "https://polyhaven.com/a/vintage_binocular",
+      "bytes": 452472,
+      "dimsCm": [
+        19,
+        20,
+        7
+      ]
+    },
+    "metaljug": {
+      "file": "metaljug.glb",
+      "polyhaven": "metal_jug",
+      "url": "https://polyhaven.com/a/metal_jug",
+      "bytes": 181144,
+      "dimsCm": [
+        20,
+        20,
+        29
+      ]
     },
     "kettle": {
       "file": "kettle.glb",
       "polyhaven": "brass_pot_02",
       "url": "https://polyhaven.com/a/brass_pot_02",
-      "bytes": 127188
+      "bytes": 127188,
+      "dimsCm": [
+        37,
+        30,
+        11
+      ]
+    },
+    "horse": {
+      "file": "horse.glb",
+      "polyhaven": "horse_statue_01",
+      "url": "https://polyhaven.com/a/horse_statue_01",
+      "bytes": 316120,
+      "dimsCm": [
+        16,
+        11,
+        22
+      ]
+    },
+    "vase": {
+      "file": "vase.glb",
+      "polyhaven": "antique_ceramic_vase_01",
+      "url": "https://polyhaven.com/a/antique_ceramic_vase_01",
+      "bytes": 180212,
+      "dimsCm": [
+        26,
+        26,
+        44
+      ]
     },
     "lantern": {
       "file": "lantern.glb",
       "polyhaven": "Lantern_01",
       "url": "https://polyhaven.com/a/Lantern_01",
-      "bytes": 422196
-    },
-    "watch": {
-      "file": "watch.glb",
-      "polyhaven": "pocket_watch",
-      "url": "https://polyhaven.com/a/pocket_watch",
-      "bytes": 259092
+      "bytes": 422196,
+      "dimsCm": [
+        12,
+        10,
+        29
+      ]
     },
     "camera": {
       "file": "camera.glb",
       "polyhaven": "Camera_01",
       "url": "https://polyhaven.com/a/Camera_01",
-      "bytes": 864556
+      "bytes": 864556,
+      "dimsCm": [
+        21,
+        26,
+        8
+      ]
+    },
+    "drill": {
+      "file": "drill.glb",
+      "polyhaven": "vintage_hand_drill",
+      "url": "https://polyhaven.com/a/vintage_hand_drill",
+      "bytes": 610376,
+      "dimsCm": [
+        12,
+        14,
+        49
+      ]
+    },
+    "microscope": {
+      "file": "microscope.glb",
+      "polyhaven": "vintage_microscope",
+      "url": "https://polyhaven.com/a/vintage_microscope",
+      "bytes": 344792,
+      "dimsCm": [
+        11,
+        18,
+        40
+      ]
+    },
+    "mantelclock": {
+      "file": "mantelclock.glb",
+      "polyhaven": "mantel_clock_01",
+      "url": "https://polyhaven.com/a/mantel_clock_01",
+      "bytes": 310980,
+      "dimsCm": [
+        48,
+        25,
+        16
+      ]
+    },
+    "oillamp": {
+      "file": "oillamp.glb",
+      "polyhaven": "vintage_oil_lamp",
+      "url": "https://polyhaven.com/a/vintage_oil_lamp",
+      "bytes": 283792,
+      "dimsCm": [
+        22,
+        22,
+        80
+      ]
+    },
+    "chest": {
+      "file": "chest.glb",
+      "polyhaven": "treasure_chest",
+      "url": "https://polyhaven.com/a/treasure_chest",
+      "bytes": 666016,
+      "dimsCm": [
+        96,
+        52,
+        62
+      ]
     }
   }
 }

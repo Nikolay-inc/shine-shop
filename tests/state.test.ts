@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
-  GOLDEN_EVERY, buyHelper, buySkin, buyTool, collectOffline, completeItem, createState, currentPrice, drawGolden,
+  GOLDEN_EVERY, itemById, buyHelper, buySkin, buyTool, collectOffline, completeItem, createState, currentPrice, drawGolden,
   goals, helperById, helperCycle, sellCurrent, startNextItem, tickHelpers,
 } from '../src/core';
 
@@ -13,14 +13,24 @@ describe('golden bag', () => {
       expect(n).toBe(1);
     }
   });
-  it('first item is never golden and is a common coin', () => {
+  it('first item is never golden, common and a starter item', () => {
     for (let seed = 0; seed < 200; seed++) {
       const s = createState(seed);
       const c = startNextItem(s);
       expect(c.golden).toBe(false);
-      expect(c.itemId).toBe('coin');
+      expect(itemById(c.itemId).unlockAt).toBe(0);
       expect(c.rarity).toBe('common');
     }
+  });
+  it('does not show the same item again within 3 items', () => {
+    const s = createState(5);
+    const seen: string[] = [];
+    for (let i = 0; i < 60; i++) {
+      seen.push(startNextItem(s).itemId);
+      completeItem(s);
+      sellCurrent(s);
+    }
+    for (let i = 3; i < seen.length; i++) expect(seen.slice(i - 3, i)).not.toContain(seen[i]);
   });
 });
 
@@ -34,7 +44,7 @@ describe('item loop', () => {
     expect(sellCurrent(s)).toBe(price);
     expect(s.coins).toBe(price);
     expect(s.restored).toBe(1);
-    expect(s.album.coin.count).toBe(1);
+    expect(s.album[s.recent[0]].count).toBe(1);
     expect(s.current).toBeNull();
   });
 });
@@ -43,11 +53,11 @@ describe('album', () => {
   it('keeps the best rarity and counts golden finds', () => {
     const s = createState(3);
     for (const [rarity, golden] of [['common', false], ['epic', true], ['rare', false]] as const) {
-      s.current = { itemId: 'coin', rarity, golden, n: 1, done: false };
+      s.current = { itemId: 'watch', rarity, golden, n: 1, done: false };
       completeItem(s);
       sellCurrent(s);
     }
-    expect(s.album.coin).toEqual({ count: 3, best: 'epic', golden: 1 });
+    expect(s.album.watch).toEqual({ count: 3, best: 'epic', golden: 1 });
   });
 });
 
@@ -61,7 +71,7 @@ describe('shop', () => {
     expect(s.tool).toBe('brush');
     expect(buyTool(s, 'brush')).toEqual({ ok: false, reason: 'owned' });
     expect(buyTool(s, 'washer').ok).toBe(true);
-    expect(s.coins).toBe(1000 - 55 - 650);
+    expect(s.coins).toBe(1000 - 55 - 600);
   });
   it('skins cost coins', () => {
     const s = createState(1);

@@ -121,20 +121,24 @@ export class Cleaner {
     return best < 0 ? null : dirs[best];
   }
 
-  /** Cleanliness 0..1 over the visible surface, sampled on the 128² low-res grid. */
+  /**
+   * Cleanliness 0..1 over every visible surface texel of the mask (hidden texels never count).
+   * Per texel: dust removed × (rust removed where there is rust). 80 % removed counts as clean — the shader
+   * shows no dirt from that point either, so the number matches what the player sees.
+   */
   computeProgress(): number {
     const r = this.raster;
     const rust = this.rust;
-    if (!r || !rust || !r.lowCount) return 0;
+    if (!r || !rust || !r.visibleCount) return 0;
+    const cov = r.covered, D = this.dust, G = this.rustC;
     let sum = 0;
-    for (let i = 0; i < r.low.length; i++) {
-      const k = r.low[i];
-      if (k < 0) continue;
-      const dustC = Math.min(1, this.dust[k] / 0.8);
-      const rustC = Math.min(1, this.rustC[k] / 0.8);
+    for (let k = 0; k < cov.length; k++) {
+      if (cov[k] !== 1) continue;
+      const dustC = D[k] >= 0.8 ? 1 : D[k] / 0.8;
+      const rustC = G[k] >= 0.8 ? 1 : G[k] / 0.8;
       sum += dustC * (1 - rust[k] * (1 - rustC));
     }
-    this.progress = sum / r.lowCount;
+    this.progress = sum / r.visibleCount;
     return this.progress;
   }
 }
